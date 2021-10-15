@@ -1,0 +1,12 @@
+export const GET_MEDICINE_DATA = "GET_MEDICINE_DATA";
+export const GET_ELEMENT_DATA = "GET_ELEMENT_DATA";
+
+export const GET_MEDICINE_BY_ID = "GET_MEDICINE_BY_ID";
+export const GET_PROCESS_BY_ID = "GET_PROCESS_BY_ID";
+
+export const GET_PLAN_DATA = "GET_PLAN_DATA";
+export const PUT_PLAN_DATA = "PUT_PLAN_DATA";
+
+export const GET_PLAN_BY_ID = "GET_PLAN_BY_ID";
+
+export const GET_PROFILE = "GET_PROFILE";
