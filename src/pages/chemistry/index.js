@@ -178,7 +178,7 @@ const Chemistry = () => {
 
   return (
     <Layout>
-      <h2>Chemistry list</h2>
+      <h2 contentEditable>Chemistry list</h2>
       <Row>
         <Col span={4}>
           <Button

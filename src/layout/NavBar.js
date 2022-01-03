@@ -1,13 +1,15 @@
-import React from "react";
-import { Layout, Menu } from "antd";
 import {
+  FileAddOutlined,
+  FilePdfOutlined,
   HomeOutlined,
-  FilePdfOutlined
+  TeamOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
+import { Layout, Menu } from "antd";
+import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 
 const NavBar = (props) => {
-
   const { collapsed } = props;
   const { Sider } = Layout;
   const { pathname } = useLocation();
@@ -20,6 +22,18 @@ const NavBar = (props) => {
         </Menu.Item>
         <Menu.Item key="/bill" icon={<FilePdfOutlined />}>
           <NavLink to="/bill">Bill</NavLink>
+        </Menu.Item>
+        <Menu.Item key="/import" icon={<FileAddOutlined />}>
+          <NavLink to="/import">Import</NavLink>
+        </Menu.Item>
+        <Menu.Item key="/export" icon={<FilePdfOutlined />}>
+          <NavLink to="/export">Export</NavLink>
+        </Menu.Item>
+        <Menu.Item key="/partner" icon={<TeamOutlined />}>
+          <NavLink to="/partner">Partner</NavLink>
+        </Menu.Item>
+        <Menu.Item key="/profile" icon={<UserOutlined />}>
+          <NavLink to="/profile">Profile</NavLink>
         </Menu.Item>
       </Menu>
     </Sider>
