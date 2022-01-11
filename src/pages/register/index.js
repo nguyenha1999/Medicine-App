@@ -22,9 +22,9 @@ const Signup = () => {
           <Col span={12}>
             <div className="bg-image"></div>
           </Col>
-          <Col span={4}></Col>
+          <Col span={3}></Col>
           <Col span={8}>
-            <Card bordered={false} style={{ width: "100%" }} className="p-2">
+            <Card bordered={false} style={{ width: "100%", padding: "8px" }}>
               <Form
                 className="form-login"
                 name="basic"
@@ -38,7 +38,13 @@ const Signup = () => {
                   remember: true,
                 }}
               >
-                <h2 className="text-center mb-4 fs-4 fw-bold">
+                <h2
+                  style={{
+                    textAlign: "center",
+                    marginBottom: "12px",
+                    fontWeight: "bold",
+                  }}
+                >
                   Đăng ký tài khoản quản trị
                 </h2>
                 <Form.Item
@@ -149,11 +155,15 @@ const Signup = () => {
                 </Form.Item>
                 <Button
                   htmlType="submit"
-                  className="w-100 text-white bg-success"
+                  style={{
+                    width: "100%",
+                    color: "#fff",
+                    backgroundColor: "#198754",
+                  }}
                 >
                   Đăng ký
                 </Button>
-                <div className="mt-4 text-center">
+                <div style={{ textAlign: "center", marginTop: "8px" }}>
                   <Link to="/login">Quay về trang đăng nhập ?</Link>
                 </div>
               </Form>

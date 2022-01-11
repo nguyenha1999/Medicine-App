@@ -1,35 +1,36 @@
-import React from "react"
-import { Table } from "antd"
-
-import style from "./style"
+import { Table } from "antd";
+import React from "react";
+import style from "./style";
 
 const ChildrenTable = ({ children }) => {
   const columns = [
     {
-      title: "Name",
+      title: "Tên",
       dataIndex: "name",
-      key: "name"
+      key: "name",
     },
     {
-      title: "Code",
+      title: "Mã hoá chất",
       dataIndex: "code",
-      key: "code"
+      key: "code",
     },
     {
-      title: "Ratio",
+      title: "Tỉ lệ",
       dataIndex: "ratio",
-      key: "ratio"
-    }
-  ]
+      key: "ratio",
+    },
+  ];
 
-  return <Table 
-    rowKey={(record) => record._id}
-    columns={columns}
-    dataSource={children}
-    size="small"
-    pagination={false}
-    style={style.mb2}
-  />
-}
+  return (
+    <Table
+      rowKey={(record) => record._id}
+      columns={columns}
+      dataSource={children}
+      size="small"
+      pagination={false}
+      style={style.mb2}
+    />
+  );
+};
 
-export default ChildrenTable
+export default ChildrenTable;

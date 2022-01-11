@@ -101,14 +101,19 @@ const Import = () => {
       orientation: "portrait",
     });
 
-    const timeType = isExport ? "Export time" : "Import time";
+    const sum = products
+      .map((product) => product.count * product.price)
+      .reduce((curr, pre) => curr + pre);
+
+    const timeType = isExport ? "Export Time" : "Import Time";
     const time = `${timeType}: ${moment(createdAt).format(FULL_DATE_FORMAT)}`;
-    const staffId = `Staff ID: ${staff?._id}`;
-    const staffName = `Staff name: ${staff?.name}`;
+    const staffId = `StaffID: ${staff?._id}`;
+    const staffName = `StaffName: ${staff?.name}`;
+    const sumValue = `SumValue: ${sum}`;
 
     let currentY = PADDING;
     doc.setFontSize(14);
-    doc.text(isExport ? "EXPORT BILL" : "IMPORT BILL", PADDING, currentY);
+    doc.text(isExport ? "Export Bill" : "Import Bill", PADDING, currentY);
     currentY += LINE_HEIGHT;
     doc.setFontSize(12);
     doc.text(time, PADDING, currentY);
@@ -118,22 +123,26 @@ const Import = () => {
     doc.text(staffName, PADDING, currentY);
     currentY += LINE_HEIGHT;
     doc.setFontSize(10);
-    doc.text("Product list", PADDING, currentY);
+    doc.text("Products List", PADDING, currentY);
     currentY += LINE_HEIGHT / 2;
     doc.autoTable({
       styles: {
         fontSize: 9,
       },
       startY: currentY,
-      head: [["Id", "Name", "Quantity"]],
+      head: [["ID", "products", "quantity", "Price/Product", "SumValue"]],
       body: products.map((product) => [
         product._id,
         product.name,
         product.count,
+        product.price,
+        product.count * product.price,
       ]),
       theme: "grid",
       rowPageBreak: "avoid",
     });
+    currentY += LINE_HEIGHT * 6;
+    doc.text(sumValue, PADDING, currentY);
     doc.save(
       `${isExport ? "ExportBill" : "ImportBill"}-${moment(createdAt).format(
         DATE_FORMAT
@@ -158,49 +167,25 @@ const Import = () => {
       render: (_text, record) => moment(record.createdAt).format(DATE_FORMAT),
       width: "10%",
     },
-    // {
-    //   title: "Loại",
-    //   key: "type",
-    //   render: (_text, record) => (record.isExport ? "Export" : "Import"),
-    //   width: "10%",
-    // },
     {
       title: "Sản phẩm",
-      key: "product",
+      key: "products",
       width: "30%",
-      children: [
-        {
-          title: "Tên",
-          key: "product",
-          width: "15%",
-          render: (_text, record) => {
-            record.products.map((product) => product.name);
-          },
-        },
-        {
-          title: "Số lượng",
-          key: "product",
-          width: "15%",
-          render: (record) => {
-            !!record.products?.length ? (
-              record.products.map((product) => (
-                <div style={style.bold}>
-                  {product.name}: {product.count}
-                </div>
-              ))
-            ) : (
-              <span>No products.</span>
-            );
-          },
-        },
-      ],
-      // render: (_text, record) => (record.isExport ? "Export" : "Import"),
+      render: (_text, record) =>
+        record.products.map((product) => (
+          <div>
+            {product.name}: {product.count}
+          </div>
+        )),
     },
     {
       title: "Tổng tiền",
-      key: "staff",
-      // render: (_text, record) => record.staff?.name,
+      key: "price",
       width: "15%",
+      render: (_text, record) =>
+        record.products
+          .map((product) => product.count * product.price)
+          .reduce((curr, pre) => curr + pre),
     },
     {
       title: "Nhân viên",
@@ -253,7 +238,7 @@ const Import = () => {
 
   return (
     <Layout>
-      <h2>Danh sách đơn xuất</h2>
+      <h2>Danh Sách Đơn Nhập</h2>
       <Row style={style.mb2}>
         <Col span={4}>
           <Button
@@ -266,7 +251,7 @@ const Import = () => {
               })
             }
           >
-            Thêm Hoá Đơn Xuất
+            Thêm Hoá Đơn Nhập
           </Button>
         </Col>
         <Col span={12}>

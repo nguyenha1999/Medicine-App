@@ -5,13 +5,6 @@ import { Link } from "react-router-dom";
 import "./index.scss";
 
 const Login = () => {
-  //   const token = useSelector((state) => state.user.token);
-  //   const login = useSelector((state) => state.user.login);
-  //   const userInfo = useSelector((state) => state.user);
-
-  //   const dispatch = useDispatch();
-  //   const history = useHistory();
-
   const [user, setUser] = useState({
     email: "",
     password: "",
@@ -23,26 +16,24 @@ const Login = () => {
     setUser({ ...user, [name]: value });
   };
 
-  //   const handlerLoginUser = async () => {
-  //     dispatch(userLogin(user));
-  //   };
-
-  //   useEffect(() => {
-  //     if (token && login && userInfo) {
-  //       history.push("/");
-  //     }
-  //   }, [token]);
-
   return (
     <div className="wraper">
       <div className="container">
         <Row>
           <Col span={12}>
+            {/* <img src={logo} alt="banner" /> */}
             <div className="bg-image"></div>
           </Col>
-          <Col span={4}></Col>
+          <Col span={3}></Col>
           <Col span={8}>
-            <Card bordered={false} style={{ width: "100%" }} className="p-2">
+            <Card
+              bordered={false}
+              style={{
+                width: "100%",
+                padding: "24px",
+                marginRight: "16px",
+              }}
+            >
               <Form
                 className="form-login"
                 name="basic"
@@ -55,9 +46,14 @@ const Login = () => {
                 initialValues={{
                   remember: true,
                 }}
-                // onFinish={handlerLoginUser}
               >
-                <h2 className="text-center mb-4 fs-4 fw-bold">
+                <h2
+                  style={{
+                    textAlign: "center",
+                    marginBottom: "4px",
+                    fontWeight: "bold",
+                  }}
+                >
                   Đăng nhập Hệ thống quản trị
                 </h2>
                 <Form.Item
@@ -98,7 +94,9 @@ const Login = () => {
                     onChange={handlerInputChange}
                   />
                 </Form.Item>
-                <div className="d-flex justify-content-between">
+                <div
+                  style={{ display: "flex", justifyContent: "space-between" }}
+                >
                   <Form.Item
                     name="remember"
                     valuePropName="checked"
@@ -109,15 +107,19 @@ const Login = () => {
                   >
                     <Checkbox checked>Nhớ tài khoản</Checkbox>
                   </Form.Item>
-                  <a href="#" className="mt-2">
+                  <a href="#" style={{ marginTop: "4px" }}>
                     Quên mật khẩu ?
                   </a>
                 </div>
 
-                <Button type="primary" htmlType="submit" className="w-100">
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  style={{ width: "100%" }}
+                >
                   Đăng nhập
                 </Button>
-                <div className="mt-4 text-center">
+                <div style={{ marginTop: "4px", textAlign: "center" }}>
                   <Link to="/register">Đăng ký tài khoản ?</Link>
                 </div>
               </Form>

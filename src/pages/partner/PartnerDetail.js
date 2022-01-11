@@ -1,11 +1,7 @@
-import { Col, DatePicker, Form, Input, Modal, notification, Row } from "antd";
-import moment from "moment";
+import { Form, Input, Modal, notification } from "antd";
 import React, { useCallback, useEffect, useState } from "react";
 import { getSelectors } from "../../api/chemistry";
 import ChemistrySelector from "./ChemistrySelector";
-import TypeSelector from "./TypeSelector";
-
-const DATE_FORMAT = "DD/MM/YYYY";
 
 const ExportDetail = ({ item, onOk, onCancel }) => {
   const [confirmLoading, setConfirmLoading] = useState(false);
@@ -24,14 +20,18 @@ const ExportDetail = ({ item, onOk, onCancel }) => {
   }, []);
 
   const [data, setData] = useState({
-    createdAt: new Date().getTime(),
+    name: "",
+    adress: "",
+    hotline: "",
     products: [],
     isExport: false,
   });
 
   const reset = () =>
     setData({
-      createdAt: new Date().getTime(),
+      name: "",
+      adress: "",
+      hotline: "",
       products: [],
       isExport: false,
     });
@@ -40,10 +40,11 @@ const ExportDetail = ({ item, onOk, onCancel }) => {
     if (!item) return;
 
     const itemData = {
-      createdAt: item.createdAt,
+      name: item.name,
+      adress: item.adress,
+      hotline: item.hotline,
       products: item.products,
       isExport: item.isExport,
-      staff: item.staff,
     };
 
     if (item._id) {
@@ -74,33 +75,6 @@ const ExportDetail = ({ item, onOk, onCancel }) => {
     });
   };
 
-  const onChangeType = (value) => {
-    setData({
-      ...data,
-      isExport: value === "Export",
-    });
-  };
-
-  const onChangeDate = (value) => {
-    setData({
-      ...data,
-      createdAt: moment(value).toDate().getTime(),
-    });
-  };
-
-  const onUpdateCountProduct = (productId, count) => {
-    setData({
-      ...data,
-      products: data.products.map((product) => {
-        if (product._id !== productId) return product;
-        return {
-          ...product,
-          count,
-        };
-      }),
-    });
-  };
-
   useEffect(() => {
     getChemistrySelector();
   }, []);
@@ -108,7 +82,7 @@ const ExportDetail = ({ item, onOk, onCancel }) => {
   const onFinish = useCallback(async () => {
     setConfirmLoading(true);
     try {
-      if (!data || !data.products || !data.createdAt) {
+      if (!data || !data.products) {
         throw new Error("Invalid information");
       }
 
@@ -139,6 +113,7 @@ const ExportDetail = ({ item, onOk, onCancel }) => {
   const isEdit = !!item?._id;
   const title = isEdit ? "Sửa Hoá Đơn" : "Thêm Hoá Đơn";
 
+  console.log(data);
   console.log(data.products);
 
   return (
@@ -153,51 +128,58 @@ const ExportDetail = ({ item, onOk, onCancel }) => {
       confirmLoading={confirmLoading}
     >
       <Form form={form} name="control-hooks" onFinish={onFinish}>
-        {!data._id && (
-          <Form.Item>
-            <h5>Loại :</h5>
-            <TypeSelector
-              value={data.isExport ? "Đơn Xuất" : "Đơn Nhập"}
-              onChange={onChangeType}
-            />
-          </Form.Item>
-        )}
-        {data.staff && <h5>Nhân viên: {data?.staff?.name || "Unknown"}</h5>}
-        <Form.Item>
-          <h5>{data.isExport ? "Thời gian xuất" : "Thời gian nhập"}</h5>
-          <DatePicker
-            format={DATE_FORMAT}
-            value={moment(new Date(data.createdAt), DATE_FORMAT)}
-            onChange={onChangeDate}
-          />
+        <Form.Item
+          name="name"
+          label="Tên Đối Tác"
+          rules={[
+            {
+              required: true,
+              message: "Vui lòng nhập tên công ty",
+            },
+          ]}
+        >
+          <Input value={data.name} />
         </Form.Item>
-        <Form.Item>
-          <h5>Lựa chọn Hoá Chất</h5>
+        <Form.Item
+          name="adress"
+          label="Địa Chỉ"
+          rules={[
+            {
+              required: true,
+              message: "Vui lòng nhập địa chỉ!",
+            },
+          ]}
+        >
+          <Input value={data.adress} />
+        </Form.Item>
+        <Form.Item
+          name="Hotline"
+          label="Hotline"
+          rules={[
+            {
+              required: true,
+              message: "Vui lòng nhập Hotline!",
+            },
+          ]}
+        >
+          <Input type="number" placeholder="Số lượng" value={data.hotline} />
+        </Form.Item>
+        <Form.Item
+          name="product"
+          label="Sản Phẩm"
+          rules={[
+            {
+              required: true,
+              message: "Vui lòng nhập tên Sản Phẩm",
+            },
+          ]}
+        >
           <ChemistrySelector
             options={chemistryOptions}
             value={data.products.map((product) => product._id)}
             onChange={onChangeSelector}
           />
         </Form.Item>
-        {data.products.map((product) => (
-          <Form.Item key={product._id}>
-            <Row gutter={8}>
-              <Col span={12}>
-                <span>{product.name}</span>
-              </Col>
-              <Col span={12}>
-                <Input
-                  type="number"
-                  placeholder="Số  lượng"
-                  value={product.count}
-                  onChange={(e) =>
-                    onUpdateCountProduct(product._id, Number(e.target.value))
-                  }
-                />
-              </Col>
-            </Row>
-          </Form.Item>
-        ))}
       </Form>
     </Modal>
   );

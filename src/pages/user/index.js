@@ -1,5 +1,5 @@
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import { Button, Col, Input, notification, Row, Table } from "antd";
+import { Avatar, Button, Col, Input, notification, Row, Table } from "antd";
 import "jspdf-autotable";
 import React, { useCallback, useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
@@ -7,13 +7,20 @@ import { create, get, remove, update } from "../../api/bill";
 import ConfirmModal from "../../component/ConfirmModal";
 import Layout from "../../layout/layout";
 import { bill } from "../../recoils/Atoms";
-import PartnerDetail from "./PartnerDetail";
 import style from "./style";
+import UserDetail from "./UserDetail";
 
 const { Search } = Input;
-const DATE_FORMAT = "DD/MM/YYYY";
 
-const Import = () => {
+const getCharLastName = (name) => {
+  let splitName = name?.split(" ");
+  if (splitName?.length) {
+    return splitName[splitName?.length - 1][0]?.toUpperCase();
+  }
+  return "X";
+};
+
+const User = () => {
   const [data, setData] = useRecoilState(bill);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
@@ -54,7 +61,7 @@ const Import = () => {
         await next(values);
         setEditingItem(null);
         notification.success({
-          message: `${isEdit ? "Update" : "Create"} chemistry successfully`,
+          message: `${isEdit ? "Update" : "Create"} user successfully`,
         });
         getData(1);
       } catch (err) {
@@ -90,20 +97,33 @@ const Import = () => {
 
   const columns = [
     {
-      title: "ID",
+      title: "#",
       dataIndex: "_id",
       key: "_id",
       width: "5%",
+      render: (_text, record) => (
+        <Avatar
+          className="custom-icon"
+          size={40}
+          style={{
+            backgroundColor: "#ed136e",
+            border: "2px solid #fff",
+            fontSize: 14,
+          }}
+        >
+          {getCharLastName(record.lastName)}
+        </Avatar>
+      ),
     },
     {
-      title: "Tên Đối Tác",
+      title: "Họ và tên",
       key: "name",
       dataIndex: "name",
       width: "10%",
     },
     {
-      title: "Địa chỉ",
-      key: "adress",
+      title: "Email",
+      key: "products",
       width: "30%",
       render: (_text, record) =>
         record.products.map((product) => (
@@ -113,27 +133,17 @@ const Import = () => {
         )),
     },
     {
-      title: "Hotline",
-      key: "hotline",
+      title: "Chức vụ",
+      key: "price",
       render: (_text, record) =>
         record.products.map((product) => product.count * product.price),
       width: "15%",
     },
     {
-      title: "Sản Phẩm",
-      key: "product",
-      render: (_text, record) => (
-        <div>
-          {!!record.products?.length ? (
-            record.products.map((product) => (
-              <div style={style.bold}>{product.name}</div>
-            ))
-          ) : (
-            <span>No products.</span>
-          )}
-        </div>
-      ),
-      width: "20%",
+      title: "Bộ Phận",
+      key: "staff",
+      render: (_text, record) => record.staff?.name,
+      width: "15%",
     },
     {
       title: "Hành động",
@@ -149,7 +159,7 @@ const Import = () => {
                 icon={<EditOutlined />}
                 onClick={() => setEditingItem(record)}
               >
-                Chỉnh sửa
+                Edit
               </Button>
             </Col>
             <Col span="auto">
@@ -159,7 +169,7 @@ const Import = () => {
                 icon={<DeleteOutlined />}
                 onClick={() => setRemoveId(record._id)}
               >
-                Xoá
+                Delete
               </Button>
             </Col>
           </Row>
@@ -170,7 +180,7 @@ const Import = () => {
 
   return (
     <Layout>
-      <h2>Danh sách đối tác</h2>
+      <h2>Danh Sách Nhân Viên</h2>
       <Row style={style.mb2}>
         <Col span={4}>
           <Button
@@ -183,7 +193,7 @@ const Import = () => {
               })
             }
           >
-            Thêm đối tác
+            Thêm Nhân Viên
           </Button>
         </Col>
         <Col span={12}>
@@ -217,7 +227,7 @@ const Import = () => {
         onOk={onRemove}
         onCancel={() => setRemoveId(null)}
       />
-      <PartnerDetail
+      <UserDetail
         item={editingItem}
         onOk={updateData}
         onCancel={() => setEditingItem(null)}
@@ -226,4 +236,4 @@ const Import = () => {
   );
 };
 
-export default Import;
+export default User;

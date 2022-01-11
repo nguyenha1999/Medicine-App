@@ -12,7 +12,7 @@ const ChemistryDetail = ({ item, onOk, onCancel }) => {
   const [form] = Form.useForm();
 
   const isEdit = !!item?._id;
-  const title = isEdit ? "Edit chemistry" : "Create chemistry";
+  const title = isEdit ? "Sửa hoá chất" : "Thêm hoá chất";
 
   const { TextArea } = Input;
 
@@ -74,7 +74,7 @@ const ChemistryDetail = ({ item, onOk, onCancel }) => {
       <Form form={form} name="control-hooks" onFinish={onFinish}>
         <Form.Item
           name="name"
-          label="Name"
+          label="Tên hoá chất"
           rules={[
             {
               required: true,
@@ -85,7 +85,18 @@ const ChemistryDetail = ({ item, onOk, onCancel }) => {
         </Form.Item>
         <Form.Item
           name="code"
-          label="Code"
+          label="Mã hoá chất"
+          rules={[
+            {
+              required: true,
+            },
+          ]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          name="price"
+          label="Giá hoá chất"
           rules={[
             {
               required: true,
@@ -96,12 +107,16 @@ const ChemistryDetail = ({ item, onOk, onCancel }) => {
         </Form.Item>
         <Form.Item
           name="use"
-          label="Use"
+          label="Cách sử dụng"
           rules={[
             {
               required: true,
             },
           ]}
+          wrapperCol={{
+            offset: 0,
+            span: 24,
+          }}
         >
           <TextArea />
         </Form.Item>

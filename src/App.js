@@ -11,6 +11,7 @@ const Partner = lazy(() => import("./pages/partner"));
 const Login = lazy(() => import("./pages/login"));
 const Profile = lazy(() => import("./pages/profile"));
 const Register = lazy(() => import("./pages/register"));
+const User = lazy(() => import("./pages/user"));
 
 function App() {
   return (
@@ -33,6 +34,9 @@ function App() {
         </Route>
         <Route exact path="/login">
           <Suspense component={<Login />} />
+        </Route>
+        <Route exact path="/user">
+          <Suspense component={<User />} />
         </Route>
         <Route path="/bill">
           <Suspense component={<Bill />} />

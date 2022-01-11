@@ -1,226 +1,222 @@
-import React, { useState, useMemo, useEffect } from "react"
-import { useParams, useHistory } from "react-router-dom"
-import { notification } from "antd"
-import { Group } from "@visx/group"
-import { LinkVertical } from "@visx/shape"
-import { hierarchy, Tree } from "@visx/hierarchy"
-import { LinearGradient } from "@visx/gradient"
-import useForceUpdate from "./useForceUpdate"
+import { LinearGradient } from "@visx/gradient";
+import { Group } from "@visx/group";
+import { hierarchy, Tree } from "@visx/hierarchy";
+import { LinkVertical } from "@visx/shape";
+import { notification } from "antd";
+import React, { useEffect, useMemo, useState } from "react";
+import { useHistory, useParams } from "react-router-dom";
+import { create, getById, update } from "../../api/recipe";
+import EditNodeModal from "./EditNodeModal";
+import useForceUpdate from "./useForceUpdate";
 
-import { getById, update, create } from "../../api/recipe"
-
-import EditNodeModal from "./EditNodeModal"
-
-const defaultMargin = { top: 30, left: 30, right: 30, bottom: 70 }
+const defaultMargin = { top: 30, left: 30, right: 30, bottom: 70 };
 
 const RecipeGroup = ({
   width: totalWidth,
   height: totalHeight,
   margin = defaultMargin,
 }) => {
-  const history = useHistory()
-  const { id, productId } = useParams()
-  const [editingNode, setEditingNode] = useState(null)
+  const history = useHistory();
+  const { id, productId } = useParams();
+  const [editingNode, setEditingNode] = useState(null);
   const [data, setData] = useState({
     name: "Root name",
     children: [],
-  })
-  const forceUpdate = useForceUpdate()
+  });
+  const forceUpdate = useForceUpdate();
   const getData = async () => {
-    if (!id) return
-    const res = await getById(id)
-    setData(res.data)
-  }
+    if (!id) return;
+    const res = await getById(id);
+    setData(res.data);
+  };
 
   useEffect(() => {
-    getData()
-  }, [id])
-
-
+    getData();
+  }, [id]);
 
   const getChild = (parent, childId) => {
-    return parent.children.find((item) => item._id === childId)
-  }
+    return parent.children.find((item) => item._id === childId);
+  };
 
   const getParentFromRoot = () => {
-    const parentIds = pathIds.slice(0, pathIds.length - 1)
-    let child = data
+    const parentIds = pathIds.slice(0, pathIds.length - 1);
+    let child = data;
     for (const parentId of parentIds) {
-      child = getChild(child, parentId)
+      child = getChild(child, parentId);
     }
 
-    return child
-  }
+    return child;
+  };
 
   const getChildFromRoot = () => {
-    let child = data
+    let child = data;
     for (const id of pathIds) {
-      child = getChild(child, id)
+      child = getChild(child, id);
     }
 
-    return child
-  }
+    return child;
+  };
 
   const getNodeParentIds = (node) => {
-    if (!node) return []
+    if (!node) return [];
     try {
-      let ids = [node.data._id]
+      let ids = [node.data._id];
       if (node.parent) {
-        ids = [...ids, ...getNodeParentIds(node.parent)]
+        ids = [...ids, ...getNodeParentIds(node.parent)];
       }
-      return ids
+      return ids;
     } catch (err) {
-      console.error(err)
-      return []
+      console.error(err);
+      return [];
     }
-  }
+  };
 
   const pathIds = useMemo(() => {
-    const ids = getNodeParentIds(editingNode)
-    if (ids.length === 1) return ids
-    return ids.reverse().slice(1)
-  }, [editingNode])
+    const ids = getNodeParentIds(editingNode);
+    if (ids.length === 1) return ids;
+    return ids.reverse().slice(1);
+  }, [editingNode]);
 
   const onRemove = async () => {
     try {
-      const itemId = pathIds[pathIds.length - 1]
-      const currentParent = getParentFromRoot()
+      const itemId = pathIds[pathIds.length - 1];
+      const currentParent = getParentFromRoot();
       currentParent.children = currentParent.children.filter(
         (item) => item._id !== itemId
-      )
+      );
       if (!currentParent.children.length) {
-        currentParent.children = null
+        currentParent.children = null;
       }
 
-      await update(data)
+      await update(data);
 
-      setEditingNode(null)
-      forceUpdate()
+      setEditingNode(null);
+      forceUpdate();
     } catch (err) {
-      console.error(err)
+      console.error(err);
     }
-  }
+  };
 
   const removeNewChildrenId = (data) => {
     if (data.children && data.children.length) {
       data.children = data.children.map((item) => {
-        if (!item.isNew) return removeNewChildrenId(item)
+        if (!item.isNew) return removeNewChildrenId(item);
         const formattedData = {
           name: item.name,
           code: item.code,
           ratio: item.ratio,
-        }
+        };
         if (item.children && item.children.length) {
           formattedData.children = item.children.map((child) =>
             removeNewChildrenId(child)
-          )
+          );
         }
-        return formattedData
-      })
+        return formattedData;
+      });
     }
-    return data
-  }
+    return data;
+  };
 
   const onOk = async (values) => {
     try {
-      const child = getChildFromRoot(pathIds)
+      const child = getChildFromRoot(pathIds);
       for (const key of Object.keys(values)) {
-        child[key] = values[key]
+        child[key] = values[key];
       }
 
-      removeNewChildrenId(data)
+      removeNewChildrenId(data);
 
-      await update(data)
-      await getData()
+      await update(data);
+      await getData();
 
-      forceUpdate()
-      setEditingNode(null)
+      forceUpdate();
+      setEditingNode(null);
     } catch (err) {
-      console.error(err)
-      notification.error({ message: err.message })
+      console.error(err);
+      notification.error({ message: err.message });
     }
-  }
+  };
 
   const onOkRoot = async (values) => {
     try {
       if (data?._id) {
-        values._id = data._id
+        values._id = data._id;
       }
-      removeNewChildrenId(values)
+      removeNewChildrenId(values);
 
       if (!data._id) {
-        const res = await create(values)
-        const { _id } = res.data
-        history.push(`/recipe/${productId}/${_id}`)
+        const res = await create(values);
+        const { _id } = res.data;
+        history.push(`/recipe/${productId}/${_id}`);
       } else {
-        await update(values)
-        await getData()
+        await update(values);
+        await getData();
       }
 
-      forceUpdate()
-      setEditingNode(null)
+      forceUpdate();
+      setEditingNode(null);
     } catch (err) {
-      console.error(err)
-      notification.error({ message: err.message })
+      console.error(err);
+      notification.error({ message: err.message });
     }
-  }
+  };
 
   const onCancel = () => {
-    setEditingNode(null)
-  }
+    setEditingNode(null);
+  };
 
   const openAllChildren = (node) => {
-    node.data.isExpanded = false
-    if (!node.children || !node.children.length) return
+    node.data.isExpanded = false;
+    if (!node.children || !node.children.length) return;
     for (const child of node.children) {
-      openAllChildren(child)
+      openAllChildren(child);
     }
-  }
+  };
 
   const closeAllChildren = (node) => {
-    if (!node.children || !node.children.length) return
+    if (!node.children || !node.children.length) return;
     if (node.data) {
-      node.data.isExpanded = true
+      node.data.isExpanded = true;
     } else {
-      node.isExpanded = true
+      node.isExpanded = true;
     }
     for (const child of node.children) {
-      closeAllChildren(child)
+      closeAllChildren(child);
     }
-  }
+  };
 
   const openChildren = (node) => {
-    if (!node.data.children || !node.data.children.length) return
-    node.data.isExpanded = false
+    if (!node.data.children || !node.data.children.length) return;
+    node.data.isExpanded = false;
     for (const child of node.data.children) {
-      closeAllChildren(child)
+      closeAllChildren(child);
     }
-  }
+  };
 
   const onToggleNode = (node) => {
-    if (!node.data.children || !node.data.children.length) return
+    if (!node.data.children || !node.data.children.length) return;
 
     // đóng mở nút con
     if (node.data.isExpanded) {
-      console.log("is closed --> open children")
-      openChildren(node)
+      console.log("is closed --> open children");
+      openChildren(node);
     } else {
       // mở nút cháu
       if (node.children.some((child) => child.data.isExpanded)) {
-        console.log("is open children --> open all children")
-        openAllChildren(node)
+        console.log("is open children --> open all children");
+        openAllChildren(node);
       } else {
-        console.log("is open all children --> close")
-        closeAllChildren(node)
+        console.log("is open all children --> close");
+        closeAllChildren(node);
       }
     }
-  }
+  };
 
-  const innerWidth = totalWidth - margin.left - margin.right
-  const innerHeight = totalHeight - margin.top - margin.bottom
-  const origin = { x: 0, y: 0 }
+  const innerWidth = totalWidth - margin.left - margin.right;
+  const innerHeight = totalHeight - margin.top - margin.bottom;
+  const origin = { x: 0, y: 0 };
 
-  if (!data) return null
+  if (!data) return null;
 
   return totalWidth < 10 ? null : (
     <div>
@@ -268,20 +264,24 @@ const RecipeGroup = ({
                             r={16}
                             fill="url('#links-gradient')"
                             onClick={() => {
-                              onToggleNode(node)
-                              forceUpdate()
+                              onToggleNode(node);
+                              forceUpdate();
                             }}
                           />
                           <Group top={Y} left={X}>
                             <>
                               <Group>
-                                <circle r={9} fill="#272b4d" stroke={'#26deb0'}
+                                <circle
+                                  r={9}
+                                  fill="#272b4d"
+                                  stroke={"#26deb0"}
                                   strokeDasharray={"0.5"}
                                   strokeOpacity={0.6}
                                   onClick={() => setEditingNode(node)}
                                 />
                               </Group>
-                              <text dy=".33em"
+                              <text
+                                dy=".33em"
                                 fontSize={9}
                                 fontFamily="Arial"
                                 textAnchor="middle"
@@ -293,7 +293,6 @@ const RecipeGroup = ({
                               </text>
                             </>
                           </Group>
-
                         </>
                       )}
                       {node.depth !== 0 && (
@@ -310,17 +309,21 @@ const RecipeGroup = ({
                             strokeOpacity={node.data.children ? 1 : 0.6}
                             rx={node.data.children ? 0 : 10}
                             onClick={() => {
-                              onToggleNode(node)
-                              forceUpdate()
+                              onToggleNode(node);
+                              forceUpdate();
                             }}
                           />
-                          <Group top={Y} left={X}  >
-                            <circle r={9} fill="#272b4d" stroke={'#26deb0'}
+                          <Group top={Y} left={X}>
+                            <circle
+                              r={9}
+                              fill="#272b4d"
+                              stroke={"#26deb0"}
                               strokeDasharray={"0.5"}
                               strokeOpacity={0.6}
                               onClick={() => setEditingNode(node)}
                             />
-                            <text dy=".33em"
+                            <text
+                              dy=".33em"
                               fontSize={9}
                               fontFamily="Arial"
                               textAnchor="middle"
@@ -343,14 +346,14 @@ const RecipeGroup = ({
                           node.depth === 0
                             ? "#71248e"
                             : node.children
-                              ? "white"
-                              : "#26deb0"
+                            ? "white"
+                            : "#26deb0"
                         }
                       >
                         {node.data.name}
                       </text>
                     </Group>
-                  )
+                  );
                 })}
               </Group>
             )}
@@ -358,7 +361,7 @@ const RecipeGroup = ({
         </Group>
       </svg>
     </div>
-  )
-}
+  );
+};
 
-export default RecipeGroup
+export default RecipeGroup;

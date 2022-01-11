@@ -212,9 +212,11 @@ const Export = () => {
     },
   ];
 
+  console.log(data);
+
   return (
     <Layout>
-      <h2>Bill list</h2>
+      <h2>Danh Sách Đơn Xuất</h2>
       <Row style={style.mb2}>
         <Col span={4}>
           <Button
@@ -227,7 +229,7 @@ const Export = () => {
               })
             }
           >
-            Thêm hoá đơn Nhập
+            Thêm Hoá Đơn Xuất
           </Button>
         </Col>
         <Col span={12}>
