@@ -11,7 +11,6 @@ import PartnerDetail from "./PartnerDetail";
 import style from "./style";
 
 const { Search } = Input;
-const DATE_FORMAT = "DD/MM/YYYY";
 
 const Import = () => {
   const [data, setData] = useRecoilState(bill);
@@ -97,27 +96,20 @@ const Import = () => {
     },
     {
       title: "Tên Đối Tác",
-      key: "name",
-      dataIndex: "name",
+      key: "nameCompany",
+      dataIndex: "nameCompany",
       width: "10%",
     },
     {
       title: "Địa chỉ",
       key: "adress",
       width: "30%",
-      render: (_text, record) =>
-        record.products.map((product) => (
-          <div>
-            {product.name}: {product.count}
-          </div>
-        )),
+      dataIndex: "adress",
     },
     {
       title: "Hotline",
       key: "hotline",
-      render: (_text, record) =>
-        record.products.map((product) => product.count * product.price),
-      width: "15%",
+      dataIndex: "hotline",
     },
     {
       title: "Sản Phẩm",

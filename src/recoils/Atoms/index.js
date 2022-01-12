@@ -19,3 +19,8 @@ export const exports = atom({
   key: key.EXPORT,
   default: [],
 });
+
+export const user = atom({
+  key: key.USER,
+  default: [],
+});

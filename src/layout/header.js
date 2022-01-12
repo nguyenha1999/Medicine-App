@@ -1,11 +1,10 @@
-import React from "react";
-import "./layout.css";
-import { Layout, Row, Col, Menu, Dropdown, Avatar } from "antd";
-import Button from "../component/Button";
-import { useHistory } from "react-router-dom";
-import { RollbackOutlined, MenuOutlined } from "@ant-design/icons";
+import { MenuOutlined } from "@ant-design/icons";
+import { Avatar, Col, Dropdown, Layout, Menu, Row } from "antd";
 import PropTypes from "prop-types";
+import React from "react";
+import { Link, useHistory } from "react-router-dom";
 import logo from "../img/logo.png";
+import "./layout.css";
 
 const { Header } = Layout;
 
@@ -21,16 +20,14 @@ const HeaderComponent = (props) => {
   const login = () => {
     history.push("/login");
   };
-  const menu = () => (
-    <Menu>
-      <Menu.Item>{nameUser}</Menu.Item>
-      <Menu.Item>
-        <Button
-          title="SignOut"
-          icon={<RollbackOutlined />}
-          onClick={goBack}
-          style={{ border: "none" }}
-        />
+  const menu = (
+    <Menu style={{ width: 220 }}>
+      <Menu.Item key="0">
+        <Link to="/profile">Hồ sơ</Link>
+      </Menu.Item>
+      <Menu.Divider />
+      <Menu.Item key="3" onClick={login}>
+        Đăng xuất
       </Menu.Item>
     </Menu>
   );
@@ -38,25 +35,16 @@ const HeaderComponent = (props) => {
   const renderAvt = () => {
     return (
       <>
-        {roleUser === null ? (
-          <Button
-            title="Login"
-            icon={<RollbackOutlined />}
-            onClick={login}
-            style={{ border: "none" }}
-          />
-        ) : (
-          <Dropdown
-            trigger="click"
-            overlay={menu}
-            placement="bottomCenter"
-            arrow
+        <Dropdown overlay={menu} trigger={["click"]}>
+          <Avatar
+            className="custom-icon"
+            style={{
+              backgroundColor: "#00a2ae",
+            }}
           >
-            <Avatar style={{ color: "#f56a00", backgroundColor: "#fde3cf" }}>
-              H
-            </Avatar>
-          </Dropdown>
-        )}
+            H
+          </Avatar>
+        </Dropdown>
       </>
     );
   };

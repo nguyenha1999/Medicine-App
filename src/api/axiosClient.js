@@ -1,11 +1,13 @@
 import axios from "axios";
 
-const token = "";
+const token = sessionStorage.getItem("token");
+
+console.log(token);
 
 export const axiosClient = axios.create({
   baseURL: "https://61d84141e6744d0017ba8a00.mockapi.io/api/v1/",
   headers: {
-    Authorization: "Bearer " + token,
+    Authorization: "Bearer ",
     "Content-Type": "application/json",
   },
 });

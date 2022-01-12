@@ -36,7 +36,7 @@ const Chemistry = () => {
       const { current, pageSize } = pagination;
       const res = await get(page || current, pageSize, search);
       console.log(res);
-      setData(res?.data?.items || []);
+      setData(res?.data.items || []);
       setPagination({
         ...pagination,
         total: res?.data?.total || 0,
@@ -90,6 +90,8 @@ const Chemistry = () => {
   useEffect(() => {
     getData();
   }, [search, pagination.current, pagination.pageSize]);
+
+  console.log(data);
 
   const columns = [
     {

@@ -1,7 +1,8 @@
-import { Button, Card, Checkbox, Col, Form, Input, Row } from "antd";
+import { Button, Card, Checkbox, Col, Form, Input, message, Row } from "antd";
 import React, { useState } from "react";
 import Particles from "react-particles-js";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
+import { login } from "../../api/user";
 import "./index.scss";
 
 const Login = () => {
@@ -9,6 +10,7 @@ const Login = () => {
     email: "",
     password: "",
   });
+  const history = useHistory();
 
   const handlerInputChange = (event) => {
     const name = event.target.name;
@@ -16,12 +18,23 @@ const Login = () => {
     setUser({ ...user, [name]: value });
   };
 
+  const submit = async (value) => {
+    try {
+      const result = await login(value);
+      console.log(result);
+      sessionStorage.setItem("token", result.data.data.token);
+      message.success(result?.data.message, 2);
+      history.push("/");
+    } catch (error) {
+      message.error(error?.response?.data.message, 2);
+    }
+  };
+
   return (
     <div className="wraper">
       <div className="container">
         <Row>
           <Col span={12}>
-            {/* <img src={logo} alt="banner" /> */}
             <div className="bg-image"></div>
           </Col>
           <Col span={3}></Col>
@@ -37,6 +50,7 @@ const Login = () => {
               <Form
                 className="form-login"
                 name="basic"
+                onFinish={submit}
                 labelCol={{
                   span: 8,
                 }}
@@ -61,7 +75,11 @@ const Login = () => {
                   rules={[
                     {
                       required: true,
-                      message: "Vui lòng nhập tài khoản !",
+                      message: "Vui lòng nhập email của bạn !",
+                    },
+                    {
+                      type: "email",
+                      message: "Không đúng định dạng email!",
                     },
                   ]}
                   wrapperCol={{
@@ -69,11 +87,7 @@ const Login = () => {
                     span: 24,
                   }}
                 >
-                  <Input
-                    name="email"
-                    onChange={handlerInputChange}
-                    placeholder="Tài khoản"
-                  />
+                  <Input name="email" placeholder="Tài khoản" />
                 </Form.Item>
                 <Form.Item
                   name="password"
@@ -81,6 +95,10 @@ const Login = () => {
                     {
                       required: true,
                       message: "Vui lòng nhập mật khẩu !",
+                    },
+                    {
+                      min: 6,
+                      message: "Mật khẩu phải dài ít nhất 6 kí tự!",
                     },
                   ]}
                   wrapperCol={{

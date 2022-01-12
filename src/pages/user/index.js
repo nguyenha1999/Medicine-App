@@ -3,10 +3,10 @@ import { Avatar, Button, Col, Input, notification, Row, Table } from "antd";
 import "jspdf-autotable";
 import React, { useCallback, useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
-import { create, get, remove, update } from "../../api/bill";
+import { create, get, remove, update } from "../../api/chemistry";
 import ConfirmModal from "../../component/ConfirmModal";
 import Layout from "../../layout/layout";
-import { bill } from "../../recoils/Atoms";
+import { chemistry } from "../../recoils/Atoms";
 import style from "./style";
 import UserDetail from "./UserDetail";
 
@@ -21,7 +21,7 @@ const getCharLastName = (name) => {
 };
 
 const User = () => {
-  const [data, setData] = useRecoilState(bill);
+  const [data, setData] = useRecoilState(chemistry);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [pagination, setPagination] = useState({
@@ -118,31 +118,31 @@ const User = () => {
     {
       title: "Họ và tên",
       key: "name",
-      dataIndex: "name",
+      dataIndex: "nameUser",
+      width: "10%",
+    },
+    {
+      title: "Mã Nhân Viên",
+      key: "name",
+      dataIndex: "Id",
       width: "10%",
     },
     {
       title: "Email",
-      key: "products",
-      width: "30%",
-      render: (_text, record) =>
-        record.products.map((product) => (
-          <div>
-            {product.name}: {product.count}
-          </div>
-        )),
+      key: "email",
+      dataIndex: "emailUser",
+      width: "25%",
     },
     {
       title: "Chức vụ",
-      key: "price",
-      render: (_text, record) =>
-        record.products.map((product) => product.count * product.price),
+      key: "vlue",
+      dataIndex: "vlue",
       width: "15%",
     },
     {
       title: "Bộ Phận",
       key: "staff",
-      render: (_text, record) => record.staff?.name,
+      dataIndex: "branch",
       width: "15%",
     },
     {
