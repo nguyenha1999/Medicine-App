@@ -21,9 +21,9 @@ const NavBar = (props) => {
         <Menu.Item key="/" icon={<HomeOutlined />}>
           <NavLink to="/">Trang Chủ</NavLink>
         </Menu.Item>
-        <Menu.Item key="/bill" icon={<FilePdfOutlined />}>
+        {/* <Menu.Item key="/bill" icon={<FilePdfOutlined />}>
           <NavLink to="/bill">Hoá Đơn</NavLink>
-        </Menu.Item>
+        </Menu.Item> */}
         <Menu.Item key="/import" icon={<FileAddOutlined />}>
           <NavLink to="/import">Đơn Nhập</NavLink>
         </Menu.Item>

@@ -3,7 +3,7 @@ import {
   EditOutlined,
   FilePdfOutlined,
 } from "@ant-design/icons";
-import { Button, Col, Input, notification, Row, Table } from "antd";
+import { Button, Col, Input, message, notification, Row, Table } from "antd";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 import moment from "moment";
@@ -26,7 +26,7 @@ const Export = () => {
   const [search, setSearch] = useState("");
   const [pagination, setPagination] = useState({
     current: 1,
-    pageSize: 10,
+    pageSize: 5,
     total: 200,
   });
 
@@ -60,12 +60,12 @@ const Export = () => {
       try {
         await next(values);
         setEditingItem(null);
-        notification.success({
-          message: `${isEdit ? "Update" : "Create"} chemistry successfully`,
-        });
+        message.success(
+          `${isEdit ? "Chỉnh sửa" : "Thêm"} hoá đơn thành công!!`
+        );
         getData(1);
       } catch (err) {
-        notification.error({
+        message.error({
           message: err.message,
         });
       }
@@ -78,9 +78,7 @@ const Export = () => {
     try {
       await remove(removeId);
       setRemoveId(null);
-      notification.success({
-        message: "Remove bill successfully",
-      });
+      message.success("Xoá đơn nhập thành công");
       getData(1);
     } catch (err) {
       notification.error({
@@ -95,20 +93,25 @@ const Export = () => {
     const PADDING = 10;
     const LINE_HEIGHT = 8;
 
-    const { isExport, createdAt, staff, products } = record;
+    const { isExport, createdAt, products } = record;
 
     const doc = new jsPDF({
       orientation: "portrait",
     });
 
-    const timeType = isExport ? "Export time" : "Import time";
+    const sum = products
+      .map((product) => product.count * product.price)
+      .reduce((curr, pre) => curr + pre);
+
+    const timeType = isExport ? "Export Time" : "Import Time";
     const time = `${timeType}: ${moment(createdAt).format(FULL_DATE_FORMAT)}`;
-    const staffId = `Staff ID: ${staff?._id}`;
-    const staffName = `Staff name: ${staff?.name}`;
+    const staffId = `StaffID: 621126`;
+    const staffName = `StaffName: Le Ngoc Ha`;
+    const sumValue = `SumValue: ${sum}`;
 
     let currentY = PADDING;
     doc.setFontSize(14);
-    doc.text(isExport ? "EXPORT BILL" : "IMPORT BILL", PADDING, currentY);
+    doc.text(isExport ? "Export Bill" : "Import Bill", PADDING, currentY);
     currentY += LINE_HEIGHT;
     doc.setFontSize(12);
     doc.text(time, PADDING, currentY);
@@ -118,24 +121,28 @@ const Export = () => {
     doc.text(staffName, PADDING, currentY);
     currentY += LINE_HEIGHT;
     doc.setFontSize(10);
-    doc.text("Product list", PADDING, currentY);
+    doc.text("Products List", PADDING, currentY);
     currentY += LINE_HEIGHT / 2;
     doc.autoTable({
       styles: {
         fontSize: 9,
       },
       startY: currentY,
-      head: [["Id", "Name", "Quantity"]],
+      head: [["ID", "Products", "Quantity", "Price/Product", "Value"]],
       body: products.map((product) => [
         product._id,
         product.name,
         product.count,
+        product.price,
+        product.count * product.price,
       ]),
       theme: "grid",
       rowPageBreak: "avoid",
     });
+    currentY += LINE_HEIGHT * 6;
+    doc.text(sumValue, PADDING, currentY);
     doc.save(
-      `${isExport ? "ExportBill" : "ImportBill"}-${moment(createdAt).format(
+      `${isExport ? "Đơn Xuất" : "Đơn Nhập"}-${moment(createdAt).format(
         DATE_FORMAT
       )}.pdf`
     );
@@ -153,26 +160,41 @@ const Export = () => {
       width: "5%",
     },
     {
-      title: "Time",
+      title: "Thời gian",
       key: "name",
       render: (_text, record) => moment(record.createdAt).format(DATE_FORMAT),
       width: "10%",
     },
     {
-      title: "Type",
-      key: "type",
-      render: (_text, record) => (record.isExport ? "Export" : "Import"),
-      width: "10%",
+      title: "Sản phẩm",
+      key: "products",
+      width: "30%",
+      render: (_text, record) =>
+        record.products.map((product) => (
+          <div>
+            {product.name}: {product.count}
+          </div>
+        )),
     },
     {
-      title: "Staff",
+      title: "Tổng tiền",
+      key: "price",
+      width: "15%",
+      render: (_text, record) =>
+        record.products
+          .map((product) => product.count * product.price)
+          .reduce((curr, pre) => curr + pre),
+    },
+    {
+      title: "Nhân viên",
       key: "staff",
       render: (_text, record) => record.staff?.name,
+      width: "15%",
     },
     {
-      title: "Action",
+      title: "Hành động",
       key: "action",
-      width: "30%",
+      width: "25%",
       render: (_text, record) => {
         return (
           <Row gutter={8}>
@@ -183,7 +205,7 @@ const Export = () => {
                 icon={<FilePdfOutlined />}
                 onClick={() => print(record)}
               >
-                Print
+                In hoá đơn
               </Button>
             </Col>
             <Col span="auto">
@@ -193,7 +215,7 @@ const Export = () => {
                 icon={<EditOutlined />}
                 onClick={() => setEditingItem(record)}
               >
-                Edit
+                Chỉnh Sửa
               </Button>
             </Col>
             <Col span="auto">
@@ -203,7 +225,7 @@ const Export = () => {
                 icon={<DeleteOutlined />}
                 onClick={() => setRemoveId(record._id)}
               >
-                Delete
+                Xoá
               </Button>
             </Col>
           </Row>
@@ -212,11 +234,9 @@ const Export = () => {
     },
   ];
 
-  console.log(data);
-
   return (
     <Layout>
-      <h2>Danh Sách Đơn Xuất</h2>
+      <h2>Danh Sách Đơn Xuất Kho</h2>
       <Row style={style.mb2}>
         <Col span={4}>
           <Button
@@ -229,7 +249,7 @@ const Export = () => {
               })
             }
           >
-            Thêm Hoá Đơn Xuất
+            Thêm Hoá Đơn Xuất Kho
           </Button>
         </Col>
         <Col span={12}>
@@ -243,36 +263,39 @@ const Export = () => {
       <Row>
         <Col span={24}>
           <Table
+            style={{ textAlign: "center" }}
             rowKey={(record) => record._id}
             columns={columns}
+            bordered
             dataSource={data}
             size="small"
             loading={loading}
             pagination={pagination}
             onChange={onTableChange}
-            expandable={{
-              expandedRowRender: (record) => (
-                <div>
-                  <h5>PRODUCT LIST</h5>
-                  {!!record.products?.length ? (
-                    record.products.map((product) => (
-                      <div style={style.bold}>
-                        {product.name}: {product.count}
-                      </div>
-                    ))
-                  ) : (
-                    <span>No products.</span>
-                  )}
-                </div>
-              ),
-            }}
+            rowClassName={(record) => !record.enabled && "disabled-row"}
+            // expandable={{
+            //   expandedRowRender: (record) => (
+            //     <div>
+            //       <h5>PRODUCT LIST</h5>
+            //       {!!record.products?.length ? (
+            //         record.products.map((product) => (
+            //           <div style={style.bold}>
+            //             {product.name}: {product.count}
+            //           </div>
+            //         ))
+            //       ) : (
+            //         <span>No products.</span>
+            //       )}
+            //     </div>
+            //   ),
+            // }}
           />
         </Col>
       </Row>
       <ConfirmModal
         visible={!!removeId}
-        title="Remove confirmation"
-        message="Do you want to remove this bill?"
+        title="Xoá hoá đơn xuất kho"
+        message="Bạn có thật sự muốn xoá hoá đơn này?"
         onOk={onRemove}
         onCancel={() => setRemoveId(null)}
       />

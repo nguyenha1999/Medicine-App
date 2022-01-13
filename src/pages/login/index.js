@@ -1,8 +1,7 @@
 import { Button, Card, Checkbox, Col, Form, Input, message, Row } from "antd";
 import React, { useState } from "react";
 import Particles from "react-particles-js";
-import { Link, useHistory } from "react-router-dom";
-import { login } from "../../api/user";
+import { useHistory } from "react-router-dom";
 import "./index.scss";
 
 const Login = () => {
@@ -18,15 +17,23 @@ const Login = () => {
     setUser({ ...user, [name]: value });
   };
 
-  const submit = async (value) => {
-    try {
-      const result = await login(value);
-      console.log(result);
-      sessionStorage.setItem("token", result.data.data.token);
-      message.success(result?.data.message, 2);
+  console.log(user);
+
+  const submit = () => {
+    if (
+      user.email === "lengocha15999@gmail.com" &&
+      user.password === "1234567"
+    ) {
       history.push("/");
-    } catch (error) {
-      message.error(error?.response?.data.message, 2);
+      message.success("Xin chào Lê Ngọc Hà");
+    } else if (
+      user.email === "admin@gmail.com" &&
+      user.password === "1234567"
+    ) {
+      history.push("/");
+      message.success("Bạn đã đăng nhập với quyền Admin");
+    } else {
+      message.error("Sai tên Email hoặc Mật Khẩu");
     }
   };
 
@@ -87,7 +94,11 @@ const Login = () => {
                     span: 24,
                   }}
                 >
-                  <Input name="email" placeholder="Tài khoản" />
+                  <Input
+                    name="email"
+                    placeholder="Tài khoản"
+                    onChange={handlerInputChange}
+                  />
                 </Form.Item>
                 <Form.Item
                   name="password"
@@ -137,9 +148,6 @@ const Login = () => {
                 >
                   Đăng nhập
                 </Button>
-                <div style={{ marginTop: "4px", textAlign: "center" }}>
-                  <Link to="/register">Đăng ký tài khoản ?</Link>
-                </div>
               </Form>
             </Card>
           </Col>

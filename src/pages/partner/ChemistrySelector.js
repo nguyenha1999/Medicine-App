@@ -8,7 +8,7 @@ const ChemistrySelector = ({ options, value, onChange }) => {
     <Select
       mode="multiple"
       allowClear
-      style={{ width: "100%" }}
+      style={{ width: "100%", marginLeft: "8px" }}
       placeholder="Please select"
       value={value}
       onChange={onChange}

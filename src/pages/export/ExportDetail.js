@@ -77,7 +77,7 @@ const ExportDetail = ({ item, onOk, onCancel }) => {
   const onChangeType = (value) => {
     setData({
       ...data,
-      isExport: value === "Export",
+      isExport: value === "Hoá đơn xuất kho",
     });
   };
 
@@ -109,15 +109,15 @@ const ExportDetail = ({ item, onOk, onCancel }) => {
     setConfirmLoading(true);
     try {
       if (!data || !data.products || !data.createdAt) {
-        throw new Error("Invalid information");
+        throw new Error("Hoá đơn thiếu  1 hoặc nhiều thông tin!!!");
       }
 
       if (!data.products.length) {
-        throw new Error("Product list is empty");
+        throw new Error("Không tìm thấy danh sách hoá chất");
       }
 
       if (!!data.products.find((product) => !product.count)) {
-        throw new Error("Product count have to be greater than 0");
+        throw new Error("Số lượng sản phẩm phải lớn hơn 0");
       }
 
       const result = {
@@ -137,7 +137,9 @@ const ExportDetail = ({ item, onOk, onCancel }) => {
   }, [item, onOk, data]);
 
   const isEdit = !!item?._id;
-  const title = isEdit ? "Edit bill" : "Create bill";
+  const title = isEdit ? "Sửa Hoá Đơn" : "Thêm Hoá Đơn";
+
+  console.log(data.products);
 
   return (
     <Modal
@@ -150,19 +152,21 @@ const ExportDetail = ({ item, onOk, onCancel }) => {
       }}
       confirmLoading={confirmLoading}
     >
-      <Form form={form} name="control-hooks" onFinish={onFinish}>
+      <Form
+        form={form}
+        name="control-hooks"
+        onFinish={onFinish}
+        style={{ height: "300px", overflow: "auto", width: "500" }}
+      >
         {!data._id && (
           <Form.Item>
-            <h5>Type</h5>
-            <TypeSelector
-              value={data.isExport ? "Export" : "Import"}
-              onChange={onChangeType}
-            />
+            <h5>Loại :</h5>
+            <TypeSelector value="Hoá Đơn Xuất Kho" onChange={onChangeType} />
           </Form.Item>
         )}
-        {data.staff && <h5>Staff: {data?.staff?.name || "Unknown"}</h5>}
+        {data.staff && <h5>Nhân viên: Lê Ngọc Hà</h5>}
         <Form.Item>
-          <h5>{data.isExport ? "Export time" : "Import time"}</h5>
+          <h5> Thời gian xuất kho</h5>
           <DatePicker
             format={DATE_FORMAT}
             value={moment(new Date(data.createdAt), DATE_FORMAT)}
@@ -170,7 +174,7 @@ const ExportDetail = ({ item, onOk, onCancel }) => {
           />
         </Form.Item>
         <Form.Item>
-          <h5>Select chemistries</h5>
+          <h5>Lựa chọn Hoá Chất</h5>
           <ChemistrySelector
             options={chemistryOptions}
             value={data.products.map((product) => product._id)}
@@ -179,14 +183,14 @@ const ExportDetail = ({ item, onOk, onCancel }) => {
         </Form.Item>
         {data.products.map((product) => (
           <Form.Item key={product._id}>
-            <Row gutter={8}>
+            <Row gutter={8} style={{ width: "420px" }}>
               <Col span={12}>
                 <span>{product.name}</span>
               </Col>
               <Col span={12}>
                 <Input
                   type="number"
-                  placeholder="Count"
+                  placeholder="Số  lượng"
                   value={product.count}
                   onChange={(e) =>
                     onUpdateCountProduct(product._id, Number(e.target.value))

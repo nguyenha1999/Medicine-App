@@ -18,7 +18,7 @@ const Import = () => {
   const [search, setSearch] = useState("");
   const [pagination, setPagination] = useState({
     current: 1,
-    pageSize: 10,
+    pageSize: 5,
     total: 200,
   });
 
@@ -53,7 +53,7 @@ const Import = () => {
         await next(values);
         setEditingItem(null);
         notification.success({
-          message: `${isEdit ? "Update" : "Create"} chemistry successfully`,
+          message: `${isEdit ? "Sửa thông tin" : "Thêm"} Đối tác thành công  `,
         });
         getData(1);
       } catch (err) {
@@ -71,7 +71,7 @@ const Import = () => {
       await remove(removeId);
       setRemoveId(null);
       notification.success({
-        message: "Remove bill successfully",
+        message: "Xoá đối tác thành công!",
       });
       getData(1);
     } catch (err) {
@@ -113,7 +113,7 @@ const Import = () => {
     },
     {
       title: "Sản Phẩm",
-      key: "product",
+      key: "products",
       render: (_text, record) => (
         <div>
           {!!record.products?.length ? (
@@ -169,8 +169,9 @@ const Import = () => {
             color="success"
             onClick={() =>
               setEditingItem({
-                createdAt: new Date().getTime(),
-                isExport: false,
+                adress: " ",
+                hotline: " ",
+                nameCompany: " ",
                 products: [],
               })
             }
@@ -205,7 +206,7 @@ const Import = () => {
       <ConfirmModal
         visible={!!removeId}
         title="Remove confirmation"
-        message="Do you want to remove this bill?"
+        message="Bạn có thực sự muốn xoá đối tác này?"
         onOk={onRemove}
         onCancel={() => setRemoveId(null)}
       />

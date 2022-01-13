@@ -1,13 +1,13 @@
-import { Button, Card, Form, Input } from "antd";
+import { Button, Card, Form, Input, message } from "antd";
 import Avatar from "antd/lib/avatar/avatar";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import Layout from "../../layout/layout";
 import "./index.scss";
 
 const Profile = () => {
   const [user, setUser] = useState({
     email: "",
-    password: "******",
+    password: "1234567",
   });
 
   const handlerInputChange = (event) => {
@@ -16,9 +16,22 @@ const Profile = () => {
     setUser({ ...user, [name]: value });
   };
 
+  const passRef = useRef();
+
+  console.log(passRef.current?.state.value);
+  console.log(user.password);
+
+  const submit = () => {
+    if (user.password === "1234567") {
+      message.error("Mật khẩu không được trùng với mật khẩu cũ");
+    } else {
+      message.success("Bạn đã thay đổi mật khẩu thành công");
+    }
+  };
+
   return (
     <Layout>
-      <div style={{ height: "80vh" }}>
+      <div style={{ height: "80vh", margin: "auto" }}>
         <Card
           style={{
             width: 400,
@@ -50,15 +63,19 @@ const Profile = () => {
               H
             </Avatar>
             <h2 style={{ marginTop: 1 }}>Lê Ngọc Hà</h2>
-            <h4 style={{ marginTop: 1 }}>kngocha15999@gmail.com</h4>
+            <h4 style={{ marginTop: 1 }}>lengocha15999@gmail.com</h4>
           </div>
-          <Form>
+          <Form onFinish={submit}>
             <Form.Item
               name="password"
               rules={[
                 {
                   required: true,
                   message: "Vui lòng nhập mật khẩu !",
+                },
+                {
+                  min: 6,
+                  message: "Mật khẩu phải dài ít nhất 6 kí tự",
                 },
               ]}
               wrapperCol={{
@@ -69,6 +86,7 @@ const Profile = () => {
             >
               <div className="form-item-profile" style={{ marginTop: "2px" }}>
                 <Input.Password
+                  ref={passRef}
                   name="password"
                   onChange={handlerInputChange}
                   defaultValue={user.password}

@@ -20,7 +20,7 @@ const ExportDetail = ({ item, onOk, onCancel }) => {
   }, []);
 
   const [data, setData] = useState({
-    name: "",
+    nameCompany: "",
     adress: "",
     hotline: "",
     products: [],
@@ -29,7 +29,7 @@ const ExportDetail = ({ item, onOk, onCancel }) => {
 
   const reset = () =>
     setData({
-      name: "",
+      nameCompany: "",
       adress: "",
       hotline: "",
       products: [],
@@ -40,7 +40,7 @@ const ExportDetail = ({ item, onOk, onCancel }) => {
     if (!item) return;
 
     const itemData = {
-      name: item.name,
+      nameCompany: item.nameCompany,
       adress: item.adress,
       hotline: item.hotline,
       products: item.products,
@@ -53,6 +53,8 @@ const ExportDetail = ({ item, onOk, onCancel }) => {
 
     setData(itemData);
   }, [item]);
+
+  console.log(item);
 
   const onChangeSelector = (values) => {
     const currentIds = data.products.map((product) => product._id);
@@ -75,40 +77,47 @@ const ExportDetail = ({ item, onOk, onCancel }) => {
     });
   };
 
+  const handlerInputChange = (event) => {
+    const name = event.target.name;
+    const value = event.target.value;
+    setData({ ...data, [name]: value });
+  };
+
   useEffect(() => {
     getChemistrySelector();
   }, []);
 
-  const onFinish = useCallback(async () => {
-    setConfirmLoading(true);
-    try {
-      if (!data || !data.products) {
-        throw new Error("Invalid information");
+  console.log(data);
+
+  const onFinish = useCallback(
+    async (vlue) => {
+      setConfirmLoading(true);
+      try {
+        if (!data || !data.products) {
+          throw new Error("Invalid information");
+        }
+
+        if (!data.products.length) {
+          throw new Error("Product list is empty");
+        }
+
+        const result = {
+          ...data,
+          products: data.products.map((product) => ({
+            _id: product._id,
+            count: product.count,
+            name: product.name,
+          })),
+        };
+
+        await onOk(result);
+      } catch (err) {
+        notification.error({ message: err.message });
       }
-
-      if (!data.products.length) {
-        throw new Error("Product list is empty");
-      }
-
-      if (!!data.products.find((product) => !product.count)) {
-        throw new Error("Product count have to be greater than 0");
-      }
-
-      const result = {
-        ...data,
-        products: data.products.map((product) => ({
-          _id: product._id,
-          count: product.count,
-          name: product.name,
-        })),
-      };
-
-      await onOk(result);
-    } catch (err) {
-      notification.error({ message: err.message });
-    }
-    setConfirmLoading(false);
-  }, [item, onOk, data]);
+      setConfirmLoading(false);
+    },
+    [item, onOk, data]
+  );
 
   const isEdit = !!item?._id;
   const title = isEdit ? "Sửa Hoá Đơn" : "Thêm Hoá Đơn";
@@ -120,7 +129,11 @@ const ExportDetail = ({ item, onOk, onCancel }) => {
     <Modal
       title={title}
       visible={!!item}
-      onOk={() => form.submit()}
+      onOk={() => {
+        {
+          form.submit();
+        }
+      }}
       onCancel={() => {
         reset();
         onCancel();
@@ -129,7 +142,7 @@ const ExportDetail = ({ item, onOk, onCancel }) => {
     >
       <Form form={form} name="control-hooks" onFinish={onFinish}>
         <Form.Item
-          name="name"
+          name="nameCompany"
           label="Tên Đối Tác"
           rules={[
             {
@@ -138,7 +151,7 @@ const ExportDetail = ({ item, onOk, onCancel }) => {
             },
           ]}
         >
-          <Input value={data.name} />
+          <Input value="1" name="nameCompany" onChange={handlerInputChange} />
         </Form.Item>
         <Form.Item
           name="adress"
@@ -150,22 +163,35 @@ const ExportDetail = ({ item, onOk, onCancel }) => {
             },
           ]}
         >
-          <Input value={data.adress} />
+          <Input
+            style={{ marginLeft: "26px", width: "377px" }}
+            name="adress"
+            onChange={handlerInputChange}
+          />
         </Form.Item>
         <Form.Item
-          name="Hotline"
+          name="hotline"
           label="Hotline"
           rules={[
             {
               required: true,
               message: "Vui lòng nhập Hotline!",
             },
+            {
+              min: 10,
+              message: "Số điện thoại phải dài ít nhất 10 chữ số!!",
+            },
           ]}
         >
-          <Input type="number" placeholder="Số lượng" value={data.hotline} />
+          <Input
+            placeholder="Số lượng"
+            style={{ marginLeft: "26px", width: "377px" }}
+            name="hotline"
+            onChange={handlerInputChange}
+          />
         </Form.Item>
         <Form.Item
-          name="product"
+          name="products"
           label="Sản Phẩm"
           rules={[
             {
@@ -176,7 +202,7 @@ const ExportDetail = ({ item, onOk, onCancel }) => {
         >
           <ChemistrySelector
             options={chemistryOptions}
-            value={data.products.map((product) => product._id)}
+            value={data?.products?.map((product) => product._id)}
             onChange={onChangeSelector}
           />
         </Form.Item>

@@ -7,7 +7,7 @@ import TypeSelector from "./TypeSelector";
 
 const DATE_FORMAT = "DD/MM/YYYY";
 
-const ExportDetail = ({ item, onOk, onCancel }) => {
+const ImportDetail = ({ item, onOk, onCancel }) => {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [form] = Form.useForm();
 
@@ -152,7 +152,12 @@ const ExportDetail = ({ item, onOk, onCancel }) => {
       }}
       confirmLoading={confirmLoading}
     >
-      <Form form={form} name="control-hooks" onFinish={onFinish}>
+      <Form
+        form={form}
+        name="control-hooks"
+        onFinish={onFinish}
+        style={{ height: "300px", overflow: "auto", width: "500" }}
+      >
         {!data._id && (
           <Form.Item>
             <h5>Loại :</h5>
@@ -181,7 +186,7 @@ const ExportDetail = ({ item, onOk, onCancel }) => {
         </Form.Item>
         {data.products.map((product) => (
           <Form.Item key={product._id}>
-            <Row gutter={8}>
+            <Row gutter={8} style={{ width: "420px" }}>
               <Col span={12}>
                 <span>{product.name}</span>
               </Col>
@@ -203,4 +208,4 @@ const ExportDetail = ({ item, onOk, onCancel }) => {
   );
 };
 
-export default ExportDetail;
+export default ImportDetail;

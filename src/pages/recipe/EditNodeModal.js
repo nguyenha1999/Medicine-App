@@ -179,42 +179,46 @@ const EditNodeModal = ({ node, onOk, onOkRoot, onCancel, onRemove }) => {
       confirmLoading={confirmLoading}
       footer={footer}
     >
-      <Card title="Information" style={style.mb2}>
-        <div style={style.mb2}>
-          <h3>Tên hoá chất</h3>
-          <Input
-            value={data?.name || ""}
-            onChange={(e) => changeData({ name: e.target.value })}
-          />
-          {!isRoot && (
-            <>
-              <h3>Mã hoá chất</h3>
-              <Input
-                value={data?.code || ""}
-                onChange={(e) => changeData({ code: e.target.value })}
-              />
+      <div style={{ height: "400px", overflow: "auto" }}>
+        <Card title="Information" style={style.mb2}>
+          <div style={style.mb2}>
+            <h3>Tên hoá chất</h3>
+            <Input
+              value={data?.name || ""}
+              onChange={(e) => changeData({ name: e.target.value })}
+            />
+            {!isRoot && (
+              <>
+                <h3>Mã hoá chất</h3>
+                <Input
+                  value={data?.code || ""}
+                  onChange={(e) => changeData({ code: e.target.value })}
+                />
 
-              <h3>Tỉ lệ</h3>
-              <Input
-                type="number"
-                value={data?.ratio || ""}
-                onChange={(e) => changeData({ ratio: Number(e.target.value) })}
-              />
-            </>
-          )}
-        </div>
-      </Card>
-
-      <Card title="Children list">
-        {!data.children || !data.children.length ? (
-          renderAddChild()
-        ) : (
-          <div>
-            <ChildrenTable children={data.children} />
-            {renderAddChild()}
+                <h3>Tỉ lệ</h3>
+                <Input
+                  type="number"
+                  value={data?.ratio || ""}
+                  onChange={(e) =>
+                    changeData({ ratio: Number(e.target.value) })
+                  }
+                />
+              </>
+            )}
           </div>
-        )}
-      </Card>
+        </Card>
+
+        <Card title="Children list">
+          {!data.children || !data.children.length ? (
+            renderAddChild()
+          ) : (
+            <div>
+              <ChildrenTable children={data.children} />
+              {renderAddChild()}
+            </div>
+          )}
+        </Card>
+      </div>
     </Modal>
   );
 };

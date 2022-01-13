@@ -23,6 +23,7 @@ const ChemistryDetail = ({ item, onOk, onCancel }) => {
       name: item.name,
       use: item.use,
       code: item.code,
+      price: item.price,
     });
   }, [item]);
 
@@ -92,7 +93,7 @@ const ChemistryDetail = ({ item, onOk, onCancel }) => {
             },
           ]}
         >
-          <Input />
+          <Input style={{ flex: 1 }} />
         </Form.Item>
         <Form.Item
           name="price"

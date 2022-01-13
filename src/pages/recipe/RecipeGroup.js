@@ -24,16 +24,16 @@ const RecipeGroup = ({
     children: [],
   });
   const forceUpdate = useForceUpdate();
-  const getData = async () => {
-    if (!id) return;
-    const res = await getById(id);
-    setData(res.data);
-  };
 
   useEffect(() => {
     getData();
   }, [id]);
 
+  const getData = async () => {
+    if (!id) return;
+    const res = await getById(id);
+    setData(res.data);
+  };
   const getChild = (parent, childId) => {
     return parent.children.find((item) => item._id === childId);
   };

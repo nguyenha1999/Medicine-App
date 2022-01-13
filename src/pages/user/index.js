@@ -1,5 +1,14 @@
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import { Avatar, Button, Col, Input, notification, Row, Table } from "antd";
+import { DeleteOutlined, EditOutlined, UserOutlined } from "@ant-design/icons";
+import {
+  Avatar,
+  Button,
+  Col,
+  Input,
+  message,
+  notification,
+  Row,
+  Table,
+} from "antd";
 import "jspdf-autotable";
 import React, { useCallback, useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
@@ -12,23 +21,17 @@ import UserDetail from "./UserDetail";
 
 const { Search } = Input;
 
-const getCharLastName = (name) => {
-  let splitName = name?.split(" ");
-  if (splitName?.length) {
-    return splitName[splitName?.length - 1][0]?.toUpperCase();
-  }
-  return "X";
-};
-
 const User = () => {
   const [data, setData] = useRecoilState(chemistry);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [pagination, setPagination] = useState({
     current: 1,
-    pageSize: 10,
+    pageSize: 5,
     total: 200,
   });
+  const ColorList = ["#f56a00", "#7265e6", "#ffbf00", "#00a2ae"];
+  const color = Math.floor(Math.random() * ColorList.length);
 
   const [removeId, setRemoveId] = useState(null);
   const [editingItem, setEditingItem] = useState(null);
@@ -60,10 +63,14 @@ const User = () => {
       try {
         await next(values);
         setEditingItem(null);
-        notification.success({
-          message: `${isEdit ? "Update" : "Create"} user successfully`,
-        });
-        getData(1);
+        if (values.Id === "621126") {
+          message.error(`Mã Nhân Viên đã tồn tại`);
+        } else {
+          notification.success({
+            message: `${isEdit ? "Update" : "Create"} user successfully`,
+          });
+          getData(1);
+        }
       } catch (err) {
         notification.error({
           message: err.message,
@@ -91,6 +98,8 @@ const User = () => {
 
   const onTableChange = (pagination) => setPagination(pagination);
 
+  console.log(color);
+
   useEffect(() => {
     getData();
   }, [search, pagination.current, pagination.pageSize]);
@@ -105,14 +114,13 @@ const User = () => {
         <Avatar
           className="custom-icon"
           size={40}
+          icon={<UserOutlined />}
           style={{
-            backgroundColor: "#ed136e",
+            backgroundColor: ColorList[color],
             border: "2px solid #fff",
             fontSize: 14,
           }}
-        >
-          {getCharLastName(record.lastName)}
-        </Avatar>
+        />
       ),
     },
     {

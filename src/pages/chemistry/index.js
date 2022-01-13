@@ -1,5 +1,5 @@
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import { Button, Col, Input, notification, Row, Table } from "antd";
+import { Button, Col, Input, message, notification, Row, Table } from "antd";
 import React, { useCallback, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useRecoilState } from "recoil";
@@ -20,7 +20,7 @@ const Chemistry = () => {
   const [search, setSearch] = useState("");
   const [pagination, setPagination] = useState({
     current: 1,
-    pageSize: 10,
+    pageSize: 5,
     total: 200,
   });
 
@@ -56,14 +56,16 @@ const Chemistry = () => {
       try {
         await next(values);
         setEditingItem(null);
-        notification.success({
-          message: `${isEdit ? "Update" : "Create"} chemistry successfully`,
-        });
+        // notification.success({
+        //   message: `${isEdit ? "Update" : "Create"} chemistry successfully`,
+        // });
+        message.success(`${isEdit ? "Sửa" : "Thêm"} hoá chất thành công !!`);
         getData(1);
       } catch (err) {
-        notification.error({
-          message: err.message,
-        });
+        // notification.error({
+        //   message: err.message,
+        // });
+        message.error(err.message);
       }
     },
     [editingItem, getData]
@@ -74,9 +76,10 @@ const Chemistry = () => {
     try {
       await remove(removeId);
       setRemoveId(null);
-      notification.success({
-        message: "Remove chemistry successfully",
-      });
+      // notification.success({
+      //   message: "Remove chemistry successfully",
+      // });
+      message.success("Xoá hoá chất thành công !");
       getData(1);
     } catch (err) {
       notification.error({
@@ -115,11 +118,11 @@ const Chemistry = () => {
       dataIndex: "use",
       key: "use",
     },
-    {
-      title: "Nhà cung cấp",
-      dataIndex: "partner",
-      key: "partner",
-    },
+    // {
+    //   title: "Nhà cung cấp",
+    //   dataIndex: "partner",
+    //   key: "partner",
+    // },
     {
       title: "Ảnh",
       key: "image",
@@ -199,6 +202,7 @@ const Chemistry = () => {
                 name: "",
                 use: "",
                 imageUrl: "",
+                price: "",
               })
             }
           >
@@ -230,8 +234,8 @@ const Chemistry = () => {
       <ImageModal imageUrl={imageUrl} setImageUrl={setImageUrl} />
       <ConfirmModal
         visible={!!removeId}
-        title="Remove confirmation"
-        message="Do you want to remove this chemistry?"
+        title="Xoá hoá chất"
+        message="Bạn có thật sự muốn xoá hoá chất này?"
         onOk={onRemove}
         onCancel={() => setRemoveId(null)}
       />

@@ -13,6 +13,8 @@ const Recipe = () => {
   const { id } = useParams();
   const [visible, setVisible] = useState(false);
 
+  console.log(id);
+
   const onRemove = async () => {
     try {
       await remove(id);
